@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: astra-void/midwrite-action@main
+      - uses: astra-void/midwrite-action@v0
         with:
           # One runner comments and uploads; the others only check.
           comment: ${{ matrix.os == 'ubuntu-latest' }}
