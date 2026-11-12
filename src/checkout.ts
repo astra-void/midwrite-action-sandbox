@@ -1,8 +1,10 @@
 import { db } from "@/db";
-import { orders } from "@/db/schema";
+import { orders, outbox } from "@/db/schema";
 
 export async function markPaid(orderId: string) {
-  await db.update(orders).set({ status: "paid" });
-  // A crash here leaves a paid order whose event was never published.
-  await queue.publish("order.paid", { orderId });
+  // The event is recorded in the same transaction; a relay publishes it.
+  await db.transaction(async (tx) => {
+    await tx.update(orders).set({ status: "paid" });
+    await tx.insert(outbox).values({ topic: "order.paid", payload: { orderId } });
+  });
 }
