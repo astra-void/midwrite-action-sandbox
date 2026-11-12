@@ -1,0 +1,25 @@
+name: midwrite
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+jobs:
+  midwrite:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astra-void/midwrite-action@main
+        with:
+          # One runner comments and uploads; the others only check.
+          comment: ${{ matrix.os == 'ubuntu-latest' }}
+          upload-sarif: ${{ matrix.os == 'ubuntu-latest' }}
